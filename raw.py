@@ -35,11 +35,12 @@ def lambda_handler(event: dict, context: dict) -> dict:
             response = "Hi there @{username}.".format(username=username)
             client = boto3.client('s3')
             bucket = aws_settings.raw_bucket
+            root_path = aws_settings.root_path
 
             try:
-                with open(f"./{timestamp}.json", mode='w', encoding='utf8') as fp:
+                with open(f"{root_path}/{timestamp}.json", mode='w', encoding='utf8') as fp:
                     json.dump(data, fp)
-                client.upload_file(f"./{timestamp}.json", bucket, f"{date}/{timestamp}.json")
+                client.upload_file(f"{root_path}/{timestamp}.json", bucket, f"{date}/{timestamp}.json")
             except ClientError as exc:
                 raise exc
 
