@@ -1,0 +1,17 @@
+{
+  "name": "devpira-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for devpira live demo",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:andre-marcos-perez/devpira-bot.git"
+  },
+  "scripts": {
+    "deploy": "serverless deploy --verbose"
+  },
+  "author": "André Perez, andre.marcos.perez@gmail.com",
+  "dependencies": {
+    "serverless": "2.42.0",
+    "serverless-python-requirements": "5.1.1"
+  }
+}
