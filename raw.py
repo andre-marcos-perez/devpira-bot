@@ -38,7 +38,7 @@ def lambda_handler(event: dict, context: dict) -> dict:
             try:
                 with open(f"{root_path}/{timestamp}.json", mode='w', encoding='utf8') as fp:
                     json.dump(data, fp)
-                client.upload_file(f"{root_path}/{timestamp}.json", bucket, f"date={date}/{timestamp}.json")
+                client.upload_file(f"{root_path}/{timestamp}.json", bucket, f"{date}/{timestamp}.json")
             except ClientError as exc:
                 raise exc
 
