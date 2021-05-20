@@ -2,9 +2,10 @@ import json
 from datetime import datetime
 
 import boto3
-import pandas as pd
 import pendulum
-import awswrangler as wr
+import pyarrow as pa
+import pyarrow.parquet as pq
+from botocore.exceptions import ClientError
 
 from util.log import Log
 from settings.aws_settings import AWSSettings
@@ -36,21 +37,19 @@ def lambda_handler(event: dict, context: dict) -> bool:
         for key, value in data.items():
             if key == 'from' or key == 'chat':
                 for k, v in data[key].items():
-                    parsed_data[f"{key if key == 'chat' else 'user'}_{k}"] = v
+                    parsed_data[f"{key if key == 'chat' else 'user'}_{k}"] = [v]
             else:
-                parsed_data[key] = value
-        parsed_data['date'] = date
-        parsed_data['timestamp'] = timestamp
+                parsed_data[key] = [value]
+        parsed_data['date'] = [date]
+        parsed_data['timestamp'] = [timestamp]
 
-        dataset = pd.DataFrame(parsed_data, index=[0])
-        wr.s3.to_parquet(
-            df=dataset,
-            path=f"s3://{enriched_bucket}/",
-            dataset=True,
-            compression="snappy",
-            partition_cols=["date"],
-            mode="overwrite_partitions"
-        )
+        try:
+            table = pa.Table.from_pydict(mapping=parsed_data)
+            pq.write_table(table=table, where=f'./{timestamp}.parquet')
+            client.upload_file(f"./{timestamp}.parquet", enriched_bucket, f"{date}/{timestamp}.parquet")
+        except ClientError as exc:
+            raise exc
+
         return True
     except Exception as exc:
         log.error(msg=exc)
