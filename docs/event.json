@@ -1,0 +1,18 @@
+{
+    "message_id": 4,
+    "from": {
+        "id": <user-id-integer>,
+        "is_bot": false,
+        "first_name": "Andr\u00e9",
+        "last_name": "Perez",
+        "username": "andremarcosperez"
+    },
+    "chat": {
+        "id": -526787316,
+        "title": "DEVPIRA LIVE DEMO",
+        "type": "group",
+        "all_members_are_administrators": true
+    },
+    "date": 1621478107,
+    "text": "Boa noite, bot!"
+}

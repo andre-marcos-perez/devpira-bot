@@ -1,0 +1,47 @@
+service:
+  name: devpira-bot
+provider:
+  name: aws
+  stackName: ${self:service.name}
+  region: sa-east-1
+  runtime: python3.8
+  environment:
+    IS_LOCAL: False
+    TELEGRAM_CHAT_ID: ${env:TELEGRAM_CHAT_ID}
+    TELEGRAM_ACCESS_TOKEN: ${env:TELEGRAM_ACCESS_TOKEN}
+  deploymentBucket:
+    name: ${self:service.name}
+package:
+  individually: false
+  exclude:
+    - package.json
+    - package-log.json
+    - node_modules/**
+functions:
+  devpira-raw:
+    handler: functions.raw.lambda_handler
+    name: ${self:service.name}
+    memorySize: 128
+    timeout: 30
+    events:
+      - http:
+          path: devpira-bot
+          method: post
+          cors: true
+  devpira-enriched:
+    handler: functions.enriched.lambda_handler
+    name: ${self:service.name}
+    memorySize: 128
+    timeout: 30
+    events:
+      - s3:
+          bucket: ${env:RAW_BUCKET}
+          event: s3:ObjectCreated:CompleteMultipartUpload
+          rules:
+            - suffix: .json
+          existing: true
+plugins:
+  - serverless-python-requirements
+custom:
+  pythonRequirements:
+    dockerizePip: true
