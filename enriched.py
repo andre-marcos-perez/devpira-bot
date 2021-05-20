@@ -29,9 +29,9 @@ def lambda_handler(event: dict, context: dict) -> bool:
         root_path = aws_settings.root_path
 
         client = boto3.client('s3')
-        client.download_file(raw_bucket, raw_key, raw_key.split('/')[-1])
+        client.download_file(raw_bucket, raw_key, f"{root_path}/{raw_key.split('/')[-1]}")
 
-        with open(raw_key.split('/')[-1], mode='r', encoding='utf8') as fp:
+        with open(f"{root_path}/{raw_key.split('/')[-1]}", mode='r', encoding='utf8') as fp:
             data = json.load(fp)
 
         parsed_data = dict()
