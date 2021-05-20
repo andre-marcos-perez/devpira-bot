@@ -48,7 +48,7 @@ def lambda_handler(event: dict, context: dict) -> bool:
         try:
             table = pa.Table.from_pydict(mapping=parsed_data)
             pq.write_table(table=table, where=f'{root_path}/{timestamp}.parquet')
-            client.upload_file(f"{root_path}/{timestamp}.parquet", enriched_bucket, f"{date}/{timestamp}.parquet")
+            client.upload_file(f"{root_path}/{timestamp}.parquet", enriched_bucket, f"date={date}/{timestamp}.parquet")
         except ClientError as exc:
             raise exc
 
