@@ -20,7 +20,7 @@ package:
 functions:
   devpira-raw:
     handler: functions.raw.lambda_handler
-    name: ${self:service.name}
+    name: devpira-raw
     memorySize: 128
     timeout: 30
     events:
@@ -30,7 +30,7 @@ functions:
           cors: true
   devpira-enriched:
     handler: functions.enriched.lambda_handler
-    name: ${self:service.name}
+    name: devpira-enriched
     memorySize: 128
     timeout: 30
     events:
