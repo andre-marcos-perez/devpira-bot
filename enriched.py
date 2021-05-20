@@ -26,6 +26,7 @@ def lambda_handler(event: dict, context: dict) -> bool:
         raw_bucket = event['Records'][0]['s3']['bucket']['name']
 
         enriched_bucket = aws_settings.enriched_bucket
+        root_path = aws_settings.root_path
 
         client = boto3.client('s3')
         client.download_file(raw_bucket, raw_key, raw_key.split('/')[-1])
@@ -45,8 +46,8 @@ def lambda_handler(event: dict, context: dict) -> bool:
 
         try:
             table = pa.Table.from_pydict(mapping=parsed_data)
-            pq.write_table(table=table, where=f'./{timestamp}.parquet')
-            client.upload_file(f"./{timestamp}.parquet", enriched_bucket, f"{date}/{timestamp}.parquet")
+            pq.write_table(table=table, where=f'{root_path}/{timestamp}.parquet')
+            client.upload_file(f"{root_path}/{timestamp}.parquet", enriched_bucket, f"{date}/{timestamp}.parquet")
         except ClientError as exc:
             raise exc
 
