@@ -26,32 +26,28 @@ def lambda_handler(event: dict, context: dict) -> dict:
 
         token = telegram_settings.access_token
         base_url = f"https://api.telegram.org/bot{token}"
+        data = json.loads(event["body"])
+        chat_id = data["message"]["chat"]["id"]
 
-        print(event)
+        if chat_id == telegram_settings.chat_id:
 
-        # data = json.loads(event["body"])
-        # chat_id = data["message"]["chat"]["id"]
-        #
-        # if chat_id == telegram_settings.chat_id:
-        #
-        #     username = data["message"]["from"]["username"]
-        #     response = "Hi there @{username}.".format(username=username)
-        #     client = boto3.client('s3')
-        #     bucket = aws_settings.raw_bucket
-        #
-        #     try:
-        #         with open(f"./{timestamp}.json", mode='w', encoding='utf8') as fp:
-        #             json.dump(data, fp)
-        #         client.upload_file(f"./{timestamp}.json", bucket, f"{date}/{timestamp}.json")
-        #     except ClientError as exc:
-        #         raise exc
-        #
-        # else:
-        #
-        #     response = "I can't talk to strangers, sorry mate!"
+            username = data["message"]["from"]["username"]
+            response = "Hi there @{username}.".format(username=username)
+            client = boto3.client('s3')
+            bucket = aws_settings.raw_bucket
 
-        data = {"text": 'Hello', "chat_id": telegram_settings.chat_id}
-        #data = {"text": response, "chat_id": chat_id}
+            try:
+                with open(f"./{timestamp}.json", mode='w', encoding='utf8') as fp:
+                    json.dump(data, fp)
+                client.upload_file(f"./{timestamp}.json", bucket, f"{date}/{timestamp}.json")
+            except ClientError as exc:
+                raise exc
+
+        else:
+
+            response = "I can't talk to strangers, sorry mate!"
+
+        data = {"text": response, "chat_id": chat_id}
         data = gzip.compress(json.dumps(data).encode('utf-8'))
         headers = {'content-type': 'application/json', 'content-encoding': 'gzip'}
         url = base_url + "/sendMessage"
@@ -61,8 +57,3 @@ def lambda_handler(event: dict, context: dict) -> dict:
     except Exception as exc:
         log.error(msg=exc)
         return dict(statusCode="200")
-
-
-if __name__ == '__main__':
-
-    lambda_handler(event=dict(), context=dict())
