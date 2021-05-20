@@ -31,8 +31,6 @@ def lambda_handler(event: dict, context: dict) -> dict:
 
         if chat_id == telegram_settings.chat_id:
 
-            username = data["message"]["from"]["username"]
-            response = "Hi there @{username}.".format(username=username)
             client = boto3.client('s3')
             bucket = aws_settings.raw_bucket
             root_path = aws_settings.root_path
@@ -40,21 +38,21 @@ def lambda_handler(event: dict, context: dict) -> dict:
             try:
                 with open(f"{root_path}/{timestamp}.json", mode='w', encoding='utf8') as fp:
                     json.dump(data, fp)
-                client.upload_file(f"{root_path}/{timestamp}.json", bucket, f"{date}/{timestamp}.json")
+                client.upload_file(f"{root_path}/{timestamp}.json", bucket, f"date={date}/{timestamp}.json")
             except ClientError as exc:
                 raise exc
 
         else:
 
-            response = "I can't talk to strangers, sorry mate!"
-
-        data = {"text": response, "chat_id": chat_id}
-        data = gzip.compress(json.dumps(data).encode('utf-8'))
-        headers = {'content-type': 'application/json', 'content-encoding': 'gzip'}
-        url = base_url + "/sendMessage"
-        requests.post(url=url, data=data, headers=headers)
-        return dict(statusCode="200")
+            text = "I can't talk to strangers, sorry mate!"
+            data = {"text": text, "chat_id": chat_id}
+            data = gzip.compress(json.dumps(data).encode('utf-8'))
+            headers = {'content-type': 'application/json', 'content-encoding': 'gzip'}
+            url = base_url + "/sendMessage"
+            requests.post(url=url, data=data, headers=headers)
 
     except Exception as exc:
         log.error(msg=exc)
+
+    finally:
         return dict(statusCode="200")
