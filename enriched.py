@@ -33,6 +33,7 @@ def lambda_handler(event: dict, context: dict) -> bool:
 
         with open(f"{root_path}/{raw_key.split('/')[-1]}", mode='r', encoding='utf8') as fp:
             data = json.load(fp)
+            data = data["message"]
 
         parsed_data = dict()
         for key, value in data.items():
