@@ -19,7 +19,7 @@ package:
     - node_modules/**
 functions:
   devpira-raw:
-    handler: functions.raw.lambda_handler
+    handler: raw.lambda_handler
     name: devpira-raw
     memorySize: 128
     timeout: 30
@@ -29,7 +29,7 @@ functions:
           method: post
           cors: true
   devpira-enriched:
-    handler: functions.enriched.lambda_handler
+    handler: enriched.lambda_handler
     name: devpira-enriched
     memorySize: 128
     timeout: 30
